@@ -223,6 +223,8 @@ struct MealSection: View {
                 Label("Add food", systemImage: "plus.circle.fill")
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(Theme.accent)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
             }
             .accessibilityIdentifier("addFood.\(meal.rawValue)")
         } header: {

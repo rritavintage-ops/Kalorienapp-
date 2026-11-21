@@ -74,7 +74,7 @@ Details, security measures and local development: [backend/README.md](backend/RE
 
 | Suite | What it covers | Runs on |
 | --- | --- | --- |
-| `CalorieCoreTests` | BMR, daily goal, macro goals (parity with Android), safety floor, macro validation, portion scaling, draft editing, daily/meal totals, history aggregation, Open Food Facts parsing and filtering, scan API request/response/error mapping | `swift test` (macOS, Linux), Xcode |
+| `CalorieCoreTests` | BMR, daily goal, macro goals (parity with Android), safety floor, macro validation, portion scaling, draft editing, daily/meal totals, history aggregation, Open Food Facts parsing and filtering, scan API request/response/error mapping | `swift test` (macOS, Linux), or the `CalorieCore` scheme in Xcode |
 | `CalorieTrackerTests` | SwiftData persistence and day queries, editing and deleting entries, profile persistence, scan flow state, image downscaling | iPhone simulator |
 | `CalorieTrackerUITests` | Onboarding → goal 2,510 kcal → dashboard; scan → edit portion → save; manual add → edit → delete; search → amount → add; History and Profile screens (with screenshots) | iPhone simulator |
 | `backend/test` | Request validation, auth, rate limiting, normalization, error mapping, Claude request shape | Node (vitest) |
@@ -86,8 +86,9 @@ xcodebuild test -project ios/CalorieTracker.xcodeproj -scheme CalorieTracker \
 (cd backend && npm test)
 ```
 
-CI (`.github/workflows/ios.yml`) builds the app, runs all three Swift suites on an iPhone simulator and uploads the
-UI-test screenshots as the `simulator-screenshots` artifact.
+CI (`.github/workflows/ios.yml`) runs `CalorieCoreTests` with `swift test` on macOS and Linux, runs the app unit and
+UI tests on an iPhone simulator, compiles an unsigned Release build for physical iPhones, and uploads the UI-test
+screenshots as the `simulator-screenshots` artifact.
 
 The UI tests launch the app with `-ui-testing`, which uses an in-memory store, isolated defaults, a mock scanner
 (the simulator has no camera) and an offline food list.
