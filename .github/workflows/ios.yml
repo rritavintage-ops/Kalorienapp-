@@ -44,9 +44,11 @@ jobs:
 
       - name: Pick simulator
         id: sim
+        if: success() || failure()
         run: echo "udid=$(python3 .github/scripts/pick_simulator.py)" >> "$GITHUB_OUTPUT"
 
       - name: Build for testing
+        if: (success() || failure()) && steps.sim.outcome == 'success'
         run: |
           set -o pipefail
           mkdir -p build
@@ -59,6 +61,7 @@ jobs:
             -quiet 2>&1 | tee build/build.log
 
       - name: Run unit + UI tests on simulator
+        if: (success() || failure()) && steps.sim.outcome == 'success'
         run: |
           set -o pipefail
           xcodebuild test-without-building \

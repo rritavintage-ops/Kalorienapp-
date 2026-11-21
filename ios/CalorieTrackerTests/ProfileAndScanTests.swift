@@ -75,7 +75,7 @@ final class ScanFlowModelTests: XCTestCase {
 
         XCTAssertEqual(model.phase, .review)
         XCTAssertEqual(model.drafts.count, 3)
-        XCTAssertEqual(model.totals.calories, 248 + 234 + 31, accuracy: 0.0001)
+        XCTAssertEqual(model.totals.calories, 513, accuracy: 0.0001) // 248 + 234 + 31
         XCTAssertEqual(model.mealName, "Chicken, rice and broccoli")
         XCTAssertTrue(model.canSave)
     }
@@ -88,15 +88,15 @@ final class ScanFlowModelTests: XCTestCase {
         var rice = model.drafts[1]
         rice.grams = 90 // half the estimated portion
         model.upsert(rice)
-        XCTAssertEqual(model.totals.calories, 248 + 117 + 31, accuracy: 0.0001)
+        XCTAssertEqual(model.totals.calories, 396, accuracy: 0.0001) // 248 + 117 + 31
 
         model.remove(model.drafts[0])
         XCTAssertEqual(model.drafts.count, 2)
-        XCTAssertEqual(model.totals.calories, 117 + 31, accuracy: 0.0001)
+        XCTAssertEqual(model.totals.calories, 148, accuracy: 0.0001) // 117 + 31
 
         model.upsert(FoodDraft(name: "Sauce", grams: 30, portionTotals: NutritionFacts(calories: 60, protein: 0, carbs: 4, fat: 5)))
         XCTAssertEqual(model.drafts.count, 3)
-        XCTAssertEqual(model.totals.calories, 117 + 31 + 60, accuracy: 0.0001)
+        XCTAssertEqual(model.totals.calories, 208, accuracy: 0.0001) // 117 + 31 + 60
     }
 
     @MainActor

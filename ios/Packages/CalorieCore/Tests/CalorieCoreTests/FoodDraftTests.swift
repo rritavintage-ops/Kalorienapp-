@@ -31,7 +31,7 @@ final class NutritionFactsTests: XCTestCase {
         let a = NutritionFacts(calories: 100, protein: 5, carbs: 10, fat: 2)
         let b = NutritionFacts(calories: 50, protein: 1, carbs: 2, fat: 3)
         XCTAssertEqual([a, b].sum(), NutritionFacts(calories: 150, protein: 6, carbs: 12, fat: 5))
-        XCTAssertEqual(a.caloriesFromMacros, 5 * 4 + 10 * 4 + 2 * 9)
+        XCTAssertEqual(a.caloriesFromMacros, 78, accuracy: 0.0001) // 5 * 4 + 10 * 4 + 2 * 9
     }
 
     func testClampingRemovesNegativeAndNonFiniteValues() {

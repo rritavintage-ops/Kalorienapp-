@@ -1,0 +1,24 @@
+name = "calorie-scan"
+main = "src/index.ts"
+compatibility_date = "2025-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Secrets (never commit them):
+#   wrangler secret put ANTHROPIC_API_KEY
+#   wrangler secret put APP_CLIENT_TOKEN      # optional, must match SCAN_API_CLIENT_TOKEN in the app
+
+[vars]
+CLAUDE_MODEL = "claude-opus-5-5"
+CLAUDE_EFFORT = "medium"
+
+# Per-installation / per-IP rate limit (Workers Rate Limiting binding).
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 20
+  period = 60
+
+[observability]
+enabled = true
