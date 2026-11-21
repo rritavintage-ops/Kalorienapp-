@@ -60,6 +60,17 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             -quiet 2>&1 | tee build/build.log
 
+      - name: List test bundles in the test run
+        if: (success() || failure()) && steps.sim.outcome == 'success'
+        run: |
+          for f in build/DerivedData/Build/Products/*.xctestrun; do
+            echo "== $f"
+            plutil -convert json -o - "$f" | python3 -c 'import json,sys
+          d=json.load(sys.stdin)
+          for cfg in d.get("TestConfigurations", []):
+              for t in cfg.get("TestTargets", []): print(" -", t.get("BlueprintName"))' || true
+          done
+
       - name: Run unit + UI tests on simulator
         if: (success() || failure()) && steps.sim.outcome == 'success'
         run: |

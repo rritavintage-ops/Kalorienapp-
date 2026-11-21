@@ -265,12 +265,11 @@ private struct DraftRow: View {
                             .foregroundStyle(Theme.over)
                     }
                 }
-                HStack(spacing: 6) {
-                    Text(portionText)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    MacroSummaryText(nutrients: draft.totals)
-                }
+                Text(portionText)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                MacroSummaryText(nutrients: draft.totals)
             }
             Spacer(minLength: 8)
             HStack(alignment: .firstTextBaseline, spacing: 3) {

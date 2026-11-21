@@ -134,8 +134,9 @@ private struct DayHistoryRow: View {
         HStack(spacing: 14) {
             MiniRing(progress: progress, isOverGoal: isOver)
             VStack(alignment: .leading, spacing: 2) {
-                Text(DayTitle.text(for: day.day))
+                Text(DayTitle.text(for: day.day, compact: true))
                     .font(.body.weight(.medium))
+                    .lineLimit(1)
                 Text("\(day.entryCount) items")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -157,12 +158,15 @@ private struct DayHistoryRow: View {
 
 enum DayTitle {
     /// "Today", "Yesterday" or e.g. "Thursday, 19 November" (Android: `parseDateText`).
-    static func text(for day: Date, now: Date = Date(), calendar: Calendar = .current) -> String {
+    static func text(for day: Date, compact: Bool = false, now: Date = Date(), calendar: Calendar = .current) -> String {
         if calendar.isDate(day, inSameDayAs: now) {
             return String(localized: "Today")
         }
         if let yesterday = calendar.date(byAdding: .day, value: -1, to: now), calendar.isDate(day, inSameDayAs: yesterday) {
             return String(localized: "Yesterday")
+        }
+        if compact {
+            return day.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated))
         }
         return day.formatted(.dateTime.weekday(.wide).day().month(.wide))
     }

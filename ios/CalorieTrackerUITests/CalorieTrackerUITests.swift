@@ -53,6 +53,22 @@ final class CalorieTrackerUITests: XCTestCase {
         field.typeText(deletes + newText)
     }
 
+    /// Opens a SwiftUI `Menu`, trying a plain tap first and a tap on its label as a fallback.
+    private func openMenu(_ menu: XCUIElement, revealing item: XCUIElement) -> Bool {
+        menu.tap()
+        if item.waitForExistence(timeout: 3) { return true }
+        screenshot("menu-after-tap")
+        menu.coordinate(withNormalizedOffset: CGVector(dx: 0.25, dy: 0.5)).tap()
+        if item.waitForExistence(timeout: 3) { return true }
+        let label = menu.staticTexts.firstMatch
+        if label.exists {
+            label.tap()
+            if item.waitForExistence(timeout: 3) { return true }
+        }
+        screenshot("menu-not-open")
+        return false
+    }
+
     // MARK: - Flows
 
     func testOnboardingCalculatesGoalAndOpensDashboard() {
@@ -131,13 +147,8 @@ final class CalorieTrackerUITests: XCTestCase {
         launch(["-skip-onboarding"])
         let addBreakfast = app.buttons["addFood.breakfast"]
         XCTAssertTrue(addBreakfast.waitForExistence(timeout: 10))
-        addBreakfast.tap()
         let manualItem = app.buttons["Enter manually"]
-        if !manualItem.waitForExistence(timeout: 5) {
-            // The menu occasionally needs a second tap while the list is still settling.
-            addBreakfast.tap()
-        }
-        XCTAssertTrue(manualItem.waitForExistence(timeout: 5), "add-food menu did not open")
+        XCTAssertTrue(openMenu(addBreakfast, revealing: manualItem), "add-food menu did not open")
         screenshot("19-add-food-menu")
         manualItem.tap()
 

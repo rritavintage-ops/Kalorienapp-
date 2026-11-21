@@ -178,26 +178,37 @@ struct FoodThumbnail: View {
     }
 }
 
-/// "P 30 · C 20 · F 10" style macro summary.
+/// "● P 30  ● C 20  ● F 10" style macro summary, always on one line.
 struct MacroSummaryText: View {
     var nutrients: NutritionFacts
 
     var body: some View {
-        HStack(spacing: 8) {
-            label("P", nutrients.protein, Theme.protein)
-            label("C", nutrients.carbs, Theme.carbs)
-            label("F", nutrients.fat, Theme.fat)
-        }
-        .font(.caption.weight(.medium))
-        .monospacedDigit()
+        Text(attributed)
+            .font(.caption.weight(.medium))
+            .monospacedDigit()
+            .lineLimit(1)
+            .minimumScaleFactor(0.75)
     }
 
-    private func label(_ letter: String, _ value: Double, _ color: Color) -> some View {
-        HStack(spacing: 3) {
-            Circle().fill(color).frame(width: 6, height: 6)
-            Text("\(letter) \(Format.grams(value))")
-                .foregroundStyle(.secondary)
+    private var attributed: AttributedString {
+        let parts: [(String, Double, Color)] = [
+            ("P", nutrients.protein, Theme.protein),
+            ("C", nutrients.carbs, Theme.carbs),
+            ("F", nutrients.fat, Theme.fat),
+        ]
+        var result = AttributedString()
+        for (index, part) in parts.enumerated() {
+            if index > 0 {
+                result += AttributedString("  ")
+            }
+            var dot = AttributedString("● ")
+            dot.foregroundColor = part.2
+            var label = AttributedString("\(part.0) \(Format.grams(part.1))")
+            label.foregroundColor = Color.secondary
+            result += dot
+            result += label
         }
+        return result
     }
 }
 
