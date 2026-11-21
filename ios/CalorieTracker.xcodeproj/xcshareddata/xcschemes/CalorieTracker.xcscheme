@@ -21,6 +21,20 @@
                ReferencedContainer = "container:CalorieTracker.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CalorieCoreTests"
+               BuildableName = "CalorieCoreTests"
+               BlueprintName = "CalorieCoreTests"
+               ReferencedContainer = "container:Packages/CalorieCore">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

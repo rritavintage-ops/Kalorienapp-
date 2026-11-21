@@ -132,7 +132,14 @@ final class CalorieTrackerUITests: XCTestCase {
         let addBreakfast = app.buttons["addFood.breakfast"]
         XCTAssertTrue(addBreakfast.waitForExistence(timeout: 10))
         addBreakfast.tap()
-        app.buttons["Enter manually"].tap()
+        let manualItem = app.buttons["Enter manually"]
+        if !manualItem.waitForExistence(timeout: 5) {
+            // The menu occasionally needs a second tap while the list is still settling.
+            addBreakfast.tap()
+        }
+        XCTAssertTrue(manualItem.waitForExistence(timeout: 5), "add-food menu did not open")
+        screenshot("19-add-food-menu")
+        manualItem.tap()
 
         let name = app.textFields["editor.name"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))

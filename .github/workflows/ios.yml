@@ -97,6 +97,13 @@ jobs:
             ls -la build/screenshots || true
           fi
 
+      - name: Print screenshots to log
+        if: always()
+        run: |
+          if [ -d build/screenshots ]; then
+            python3 .github/scripts/print_screenshots.py build/screenshots || true
+          fi
+
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
