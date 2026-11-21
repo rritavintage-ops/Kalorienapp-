@@ -1,0 +1,113 @@
+name: iOS
+
+on:
+  push:
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios.yml"
+      - ".github/scripts/**"
+  pull_request:
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios.yml"
+      - ".github/scripts/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core-linux:
+    name: CalorieCore tests (Linux)
+    runs-on: ubuntu-latest
+    container: swift:6.1
+    steps:
+      - uses: actions/checkout@v4
+      - name: swift test
+        run: swift test --package-path ios/Packages/CalorieCore
+
+  app:
+    name: Build & test on iPhone simulator
+    runs-on: macos-15
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphonesimulator --show-sdk-version
+
+      - name: CalorieCore tests (macOS)
+        run: swift test --package-path ios/Packages/CalorieCore
+
+      - name: Pick simulator
+        id: sim
+        run: echo "udid=$(python3 .github/scripts/pick_simulator.py)" >> "$GITHUB_OUTPUT"
+
+      - name: Build for testing
+        run: |
+          set -o pipefail
+          mkdir -p build
+          xcodebuild build-for-testing \
+            -project ios/CalorieTracker.xcodeproj \
+            -scheme CalorieTracker \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet 2>&1 | tee build/build.log
+
+      - name: Run unit + UI tests on simulator
+        run: |
+          set -o pipefail
+          xcodebuild test-without-building \
+            -project ios/CalorieTracker.xcodeproj \
+            -scheme CalorieTracker \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build/DerivedData \
+            -resultBundlePath build/TestResults.xcresult \
+            -quiet 2>&1 | tee build/test.log
+
+      - name: Test summary
+        if: always()
+        run: |
+          if [ -d build/TestResults.xcresult ]; then
+            xcrun xcresulttool get test-results summary --path build/TestResults.xcresult --compact || true
+            echo
+            xcrun xcresulttool get test-results tests --path build/TestResults.xcresult --compact \
+              | python3 -c 'import json,sys
+          def walk(n, depth=0):
+              res = n.get("result", "")
+              if n.get("nodeType") in ("Test Case",) and res != "Passed":
+                  print("FAILED:", n.get("name"), "|", " ".join(c.get("name","") for c in n.get("children", [])))
+              for c in n.get("children", []): walk(c, depth+1)
+          for n in json.load(sys.stdin).get("testNodes", []): walk(n)' || true
+          fi
+
+      - name: Export screenshots
+        if: always()
+        run: |
+          if [ -d build/TestResults.xcresult ]; then
+            mkdir -p build/screenshots
+            xcrun xcresulttool export attachments --path build/TestResults.xcresult --output-path build/screenshots || true
+            ls -la build/screenshots || true
+          fi
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulator-screenshots
+          path: build/screenshots
+          if-no-files-found: ignore
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            build/TestResults.xcresult
+            build/*.log
+          if-no-files-found: ignore

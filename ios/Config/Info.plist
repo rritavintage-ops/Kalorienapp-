@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Values come from Config/Base.xcconfig (and the optional, git-ignored Config/Secrets.xcconfig). -->
+	<key>ScanAPIBaseURL</key>
+	<string>$(SCAN_API_BASE_URL)</string>
+	<key>ScanAPIClientToken</key>
+	<string>$(SCAN_API_CLIENT_TOKEN)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- Allows talking to a local development backend (wrangler dev). HTTPS is required everywhere else. -->
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+</dict>
+</plist>

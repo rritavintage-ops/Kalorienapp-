@@ -1,0 +1,17 @@
+# macOS / Xcode
+.DS_Store
+build/
+DerivedData/
+*.xcresult
+xcuserdata/
+*.xcuserstate
+ios/Config/Secrets.xcconfig
+.swiftpm/
+ios/Packages/CalorieCore/.build/
+
+# Backend
+node_modules/
+.wrangler/
+.dev.vars
+backend/dist/
+coverage/

@@ -1,0 +1,19 @@
+// Build configuration for the CalorieTracker app target.
+//
+// Personal values (team, bundle id, backend URL, client token) belong in Config/Secrets.xcconfig,
+// which is git-ignored. Copy Config/Secrets.example.xcconfig to get started.
+
+APP_BUNDLE_IDENTIFIER = com.kalorienapp.calorietracker
+PRODUCT_BUNDLE_IDENTIFIER = $(APP_BUNDLE_IDENTIFIER)
+DEVELOPMENT_TEAM =
+
+// Base URL of the meal-scan backend (see backend/README.md), e.g. https:/$()/calorie-scan.example.workers.dev
+// The `$()` keeps xcconfig from treating `//` as the start of a comment.
+// Empty means: scanning is unavailable, manual entry and food search still work.
+SCAN_API_BASE_URL =
+
+// Optional shared token checked by the backend (APP_CLIENT_TOKEN). It ships inside the app, so treat it
+// as an abuse speed bump, not a secret. The Anthropic API key never goes into the app.
+SCAN_API_CLIENT_TOKEN =
+
+#include? "Secrets.xcconfig"
